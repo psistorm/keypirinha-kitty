@@ -24,7 +24,6 @@ class KiTTY(kp.Plugin):
 
     def __init__(self):
         super().__init__()
-        self._debug = True
 
     def on_start(self):
         self._read_config()
