@@ -69,7 +69,7 @@ class KiTTY(kp.Plugin):
                     target=kpu.kwargs_encode(
                         dist=data_bag['distro_name'], session=session_name),
                     args_hint=kp.ItemArgsHint.FORBIDDEN,
-                    hit_hint=kp.ItemHitHint.NOARGS))
+                    hit_hint=kp.ItemHitHint.IGNORE))
 
         self.set_suggestions(suggestions, kp.Match.ANY, kp.Sort.NONE)
 
