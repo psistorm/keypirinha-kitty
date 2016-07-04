@@ -11,5 +11,8 @@ The plugin will only add one catalog item to Keypirinha. This item has two funct
 
 ## Release Notes: ##
 
-V 1.0:
-First release of plugin.
+**V 1.0**
+- First release of plugin.
+
+**V 1.0.1**
+- Small fix to avoid adding session suggestions to catalog on execution.
