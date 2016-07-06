@@ -19,11 +19,11 @@ class KiTTY(kp.Plugin):
     DIST_SECTION_PREFIX = "dist/" # lower case
     EXE_NAME_OFFICIAL = "KITTY.EXE"
 
-    default_icon_handle = None
-    distros = {}
-
     def __init__(self):
         super().__init__()
+
+        self._default_icon_handle = None
+        self._distros = {}
 
     def on_start(self):
         self._read_config()
@@ -32,7 +32,7 @@ class KiTTY(kp.Plugin):
         self._read_config()
 
         catalog = []
-        for distro_name, distro in self.distros.items():
+        for distro_name, distro in self._distros.items():
             if not distro['enabled']:
                 continue
             # catalog the executable
@@ -57,7 +57,7 @@ class KiTTY(kp.Plugin):
         suggestions = []
 
         data_bag = kpu.kwargs_decode(items_chain[0].data_bag())
-        sessions = self.distros[data_bag['distro_name']]['sessions']
+        sessions = self._distros[data_bag['distro_name']]['sessions']
 
         for session_name in sessions:
             if not user_input or kpu.fuzzy_score(user_input, session_name) > 0:
@@ -91,10 +91,10 @@ class KiTTY(kp.Plugin):
             return
 
         # check if the desired distro is available and enabled
-        if distro_name not in self.distros:
+        if distro_name not in self._distros:
             self.warn('Could not execute item "{}". Distro "{}" not found.'.format(item.label(), distro_name))
             return
-        distro = self.distros[distro_name]
+        distro = self._distros[distro_name]
         if not distro['enabled']:
             self.warn('Could not execute item "{}". Distro "{}" is disabled.'.format(item.label(), distro_name))
             return
@@ -118,10 +118,10 @@ class KiTTY(kp.Plugin):
 
 
     def _read_config(self):
-        if self.default_icon_handle:
-            self.default_icon_handle.free()
-            self.default_icon_handle = None
-        self.distros = {}
+        if self._default_icon_handle:
+            self._default_icon_handle.free()
+            self._default_icon_handle = None
+        self._distros = {}
 
         settings = self.load_settings()
         for section_name in settings.sections():
@@ -152,7 +152,7 @@ class KiTTY(kp.Plugin):
                     self.warn('KiTTY distribution "{}" not found'.format(dist_name))
                 continue
 
-            self.distros[dist_name.lower()] = {
+            self._distros[dist_name.lower()] = {
                 'orig_name': dist_name,
                 'enabled': dist_props['enabled'],
                 'label': dist_props['label'],
@@ -161,11 +161,11 @@ class KiTTY(kp.Plugin):
                 'file_based': dist_file_based,
                 'sessions': dist_props['sessions']}
 
-            if dist_props['enabled'] and not self.default_icon_handle:
-                self.default_icon_handle = self.load_icon(
+            if dist_props['enabled'] and not self._default_icon_handle:
+                self._default_icon_handle = self.load_icon(
                     "@{},0".format(dist_props['exe_file']))
-                if self.default_icon_handle:
-                    self.set_default_icon(self.default_icon_handle)
+                if self._default_icon_handle:
+                    self.set_default_icon(self._default_icon_handle)
 
 
     def _detect_distro_official(self, given_enabled, given_label, given_path, given_file_based):
