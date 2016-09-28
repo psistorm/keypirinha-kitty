@@ -70,6 +70,16 @@ class KiTTY(kp.Plugin):
                     args_hint=kp.ItemArgsHint.FORBIDDEN,
                     hit_hint=kp.ItemHitHint.IGNORE))
 
+        if user_input:
+            suggestions.append(self.create_item(
+                category=kp.ItemCategory.REFERENCE,
+                label="{}".format(user_input),
+                short_desc='Launch "{}" directly'.format(user_input),
+                target=kpu.kwargs_encode(
+                    dist=data_bag['distro_name'], host_name=user_input),
+                args_hint=kp.ItemArgsHint.FORBIDDEN,
+                hit_hint=kp.ItemHitHint.IGNORE))
+
         self.set_suggestions(suggestions, kp.Match.ANY, kp.Sort.NONE)
 
 
@@ -85,7 +95,10 @@ class KiTTY(kp.Plugin):
         try:
             item_target = kpu.kwargs_decode(item.target())
             distro_name = item_target['dist']
-            session_name = item_target['session']
+            if 'session' in item_target:
+                session_name = item_target['session']
+            if 'host_name' in item_target:
+                host_name = item_target['host_name']
         except Exception as e:
             self.dbg(e)
             return
@@ -97,6 +110,10 @@ class KiTTY(kp.Plugin):
         distro = self._distros[distro_name]
         if not distro['enabled']:
             self.warn('Could not execute item "{}". Distro "{}" is disabled.'.format(item.label(), distro_name))
+            return
+
+        if host_name:
+            kpu.shell_execute(distro['exe_file'], args=host_name)
             return
 
         # check if the desired session still exists
