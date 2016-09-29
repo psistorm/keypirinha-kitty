@@ -97,8 +97,12 @@ class KiTTY(kp.Plugin):
             distro_name = item_target['dist']
             if 'session' in item_target:
                 session_name = item_target['session']
+            else:
+                session_name = None
             if 'host_name' in item_target:
                 host_name = item_target['host_name']
+            else:
+                host_name = None
         except Exception as e:
             self.dbg(e)
             return
