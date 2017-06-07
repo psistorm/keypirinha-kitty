@@ -4,6 +4,7 @@ import keypirinha as kp
 import keypirinha_util as kpu
 import os
 import os.path
+import glob
 import winreg
 import urllib.parse
 
@@ -57,14 +58,17 @@ class KiTTY(kp.Plugin):
         suggestions = []
 
         data_bag = kpu.kwargs_decode(items_chain[0].data_bag())
-        sessions = self._distros[data_bag['distro_name']]['sessions']
+        current_distro = self._distros[data_bag['distro_name']]
+        current_distro_path = os.path.dirname(os.path.abspath(current_distro['exe_file']))
+        sessions = current_distro['sessions']
 
         for session_name in sessions:
-            if not user_input or kpu.fuzzy_score(user_input, session_name) > 0:
+            displayed_session_name = session_name.replace(os.path.join(current_distro_path, 'Sessions') + os.sep, '')
+            if not user_input or kpu.fuzzy_score(user_input, displayed_session_name) > 0:
                 suggestions.append(self.create_item(
                     category=kp.ItemCategory.REFERENCE,
-                    label="{}".format(session_name),
-                    short_desc='Launch "{}" session'.format(session_name),
+                    label="{}".format(displayed_session_name),
+                    short_desc='Launch "{}" session'.format(displayed_session_name),
                     target=kpu.kwargs_encode(
                         dist=data_bag['distro_name'], session=session_name),
                     args_hint=kp.ItemArgsHint.FORBIDDEN,
@@ -308,8 +312,9 @@ class KiTTY(kp.Plugin):
 
     def _get_sessions_from_folder(self, exe_folder):
         sessions = []
-        for file in os.listdir(os.path.join(exe_folder, 'Sessions')):
-            session_file_name = urllib.parse.unquote(file)
-            sessions.append(session_file_name)
+        for file in glob.iglob(os.path.join(exe_folder, 'Sessions') + os.sep + '**' + os.sep + '*', recursive=True):
+            if (os.path.isfile(file)):
+                session_file_name = urllib.parse.unquote(file)
+                sessions.append(session_file_name)
 
         return sessions

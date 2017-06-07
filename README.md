@@ -19,3 +19,6 @@ The plugin will only add one catalog item to Keypirinha. This item has two funct
 
 **V 1.0.2**
 - Allowing to launch sessions via IP or host name directly through suggestions.
+
+**V 1.0.3**
+- Searching through session folders recursively
