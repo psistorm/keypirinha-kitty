@@ -198,7 +198,7 @@ class KiTTY(kp.Plugin):
             'enabled': given_enabled,
             'label': given_label,
             'exe_file': None,
-            'cmd_args': ['-load', '%1'],
+            'cmd_args': ['-kload', '%1'],
             'file_based': given_file_based,
             'sessions': []}
 
