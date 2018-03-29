@@ -133,7 +133,7 @@ class KiTTY(kp.Plugin):
         sidx = distro['cmd_args'].index('%1')
         kpu.shell_execute(
             distro['exe_file'],
-            args=distro['cmd_args'][0:sidx] + [session_name] + distro['cmd_args'][sidx+1:])
+            args=distro['cmd_args'][0:sidx] + [session_name.replace(' ', '%20')] + distro['cmd_args'][sidx+1:])
 
 
     def on_events(self, flags):
